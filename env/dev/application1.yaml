@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gke-shared-gateway-poc
+  namespace: argocd
+  # Optional: Protects the application from accidental deletion
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    # This URL MUST exactly match the URL you wrote inside your argocd-repo-secret.yaml file
+    repoURL: 'https://github.com/mohanitdevops/gitops.git'
+    targetRevision: dev
+    path: env/dev
+  destination:
+    server: 'https://kubernetes.default.svc'
+    # Target namespace where the actual routing resources and apps will be managed
+    namespace: default 
+  syncPolicy:
+    automated:
+      prune: true      # Automatically deletes old resources if removed from Git
+      selfHeal: true   # Overwrites manual kubectl modifications to enforce Git state
+    syncOptions:
+      - CreateNamespace=true # Forces creation of target namespaces if they don't exist

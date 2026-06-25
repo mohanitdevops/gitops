@@ -1,0 +1,14 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: gcp-shared-gateway
+  namespace: default # The physical LB infrastructure lives here
+spec:
+  gatewayClassName: gke-l7-gxlb # Provisions a Global External App Load Balancer
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All # CRUCIAL: Allows rules from other namespaces to attach to this LB
